@@ -1,0 +1,3 @@
+{"level":"error","message":"Proxy error: api is not defined","service":"api-gateway","timestamp":"2025-03-01T07:17:31.329Z"}
+{"level":"error","message":"Proxy error: api is not defined","service":"api-gateway","timestamp":"2025-03-01T07:17:46.740Z"}
+{"level":"error","message":"Proxy error: read ECONNRESET","service":"api-gateway","timestamp":"2025-03-01T07:25:56.483Z"}
