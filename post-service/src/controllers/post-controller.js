@@ -1,66 +1,147 @@
 const Post = require('../models/Post');
 const logger = require('../utils/logger');
+const { validatePost } = require('../utils/Validation');
 
-const createPost = async(req,res) => {
-    try{
-        const {content,mediaId}=req.body;
-        const createNewPost= new Post({
-            user:req.user.userId,
+
+async function inValidatePostCache(req, input) {
+    const inputKey = `post:${input}`;
+    await req.redisClient.del(inputKey);
+    const keys = req.redisClient.keys('posts:*')
+    if (keys.length > 0) {
+        await req.redisClient.del(keys);
+    }
+}
+
+const createPost = async (req, res) => {
+    logger.info("create post end points hit...")
+
+    try {
+        // validate the schema..
+        const { error } = validatePost(req.body);
+        if (error) {
+            logger.warn("Validation post error", error?.details[0]?.message)
+            return res.status(400).json({
+                success: false,
+                message: error?.details[0]?.message,
+            })
+        }
+
+
+        const { content, mediaId } = req.body;
+        const createNewPost = new Post({
+            user: req.user.userId,
             content,
-            mediaIds:mediaId||[]
+            mediaIds: mediaId || []
         })
-
         await createNewPost.save();
-        logger.info("Post created successfully",createNewPost);
+        logger.info("Post created successfully", createNewPost);
+        await inValidatePostCache();
+
         res.status(201).json({
-            success:false,
-            message:"Post created successfully.."
+            success: false,
+            message: "Post created successfully.."
         })
-    }catch(err){
-        logger.error("Error creating post",err);
+    } catch (err) {
+        logger.error("Error creating post", err);
         res.status(500).json({
-            success:false,
-            message:"Error creating post"
+            success: false,
+            message: "Error creating post"
         })
     }
 }
 
-const getAllPost = async(req,res) => {
-    try{
+const getAllPost = async (req, res) => {
+    try {
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 10;
+        const startIndex = (page - 1) * limit;
 
-    }catch(err){
-        logger.error("Error fetcing all post",err);
+        const cacheKey = `posts:${page}:${limit}`;
+        const cachePosts = await req.redisClient.get(cacheKey);
+
+        if (cachePosts) {
+            return res.status(200).json({
+                data: JSON.parse(cachePosts)
+            })
+        }
+
+        const AllPosts = await Post.find({}).sort({ createdAt: -1 }).skip(startIndex).limit(limit);
+        const totalNoOfPost = await Post.countDocuments();
+
+        const result = {
+            AllPosts,
+            currentPage: page,
+            totalPages: Math.ceil(totalNoOfPost / limit),
+            totalPosts: totalNoOfPost
+        }
+
+        // save post in redis server.
+        req.redisClient.setex(cacheKey, 300, JSON.stringify(result));
+        res.json(result);
+
+
+    } catch (err) {
+        logger.error("Error fetcing all post", err);
         res.status(500).json({
-            success:false,
-            message:"Error getAll post"
+            success: false,
+            message: "Error getAll post"
         })
     }
 }
 
 
-const getPost = async(req,res) => {
-    try{
+const getPost = async (req, res) => {
+    try {
+        const postId = req.params.id;
+        const cacheKey = `post:${postId}`;
+        const cachePost = await req.redisClient.get(cacheKey);
+        if (cachePost) {
+            return res.status(200).json(JSON.parse(cachePost));
+        }
 
-    }catch(err){
-        logger.error("Error fetching post",err);
+        const singlePostById = await Post.findById(postId);
+        if (!singlePostById) {
+            return res.status(404).json({
+                status: false,
+                message: "Post not found"
+            })
+        }
+
+        await req.redisClient.setex(
+            cachePost, 3600, JSON.stringify(singlePostById)
+        )
+
+    } catch (err) {
+        logger.error("Error fetching post", err);
         res.status(500).json({
-            success:false,
-            message:"Error geting post"
+            success: false,
+            message: "Error geting post"
         })
     }
 }
 
 
-const deletePost = async(req,res) => {
-    try{
-
-    }catch(err){
-        logger.error("Error deleting post",err);
+const deletePost = async (req, res) => {
+    try {
+        const id = req.params.id;
+        const deletePost = await Post.findOneAndDelete({ _id: id });
+        if (!deletePost) {
+            return res.status(200).json({
+                status: false,
+                message: "Post deleted successfully.."
+            })
+        }
+        await inValidatePostCache(req,id);
+        res.json({
+            message: "Post deleted successfully",
+        });
+    } catch (err) {
+        logger.error("Error deleting post", err);
         res.status(500).json({
-            success:false,
-            message:"Error deleting post"
+            success: false,
+            message: "Error deleting post"
         })
     }
 }
 
-module.exports = {createPost}
+module.exports = { createPost ,getAllPost,getPost,deletePost}
