@@ -27,25 +27,25 @@ const createPost = async (req, res) => {
         }
 
 
-        const { content, mediaId } = req.body;
+        const { content, mediaIds } = req.body;
         const createNewPost = new Post({
             user: req.user.userId,
             content,
-            mediaIds: mediaId || []
+            mediaIds: mediaIds || []
         })
         await createNewPost.save();
         logger.info("Post created successfully", createNewPost);
-        await inValidatePostCache();
+        await inValidatePostCache(req);
 
         res.status(201).json({
-            success: false,
+            success: true,
             message: "Post created successfully.."
         })
     } catch (err) {
         logger.error("Error creating post", err);
         res.status(500).json({
             success: false,
-            message: "Error creating post"
+            message: err.message
         })
     }
 }

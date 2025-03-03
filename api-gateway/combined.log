@@ -44,3 +44,22 @@
 {"level":"info","message":"Identity service is running on port http://localhost:3001","service":"api-gateway","timestamp":"2025-03-01T18:41:24.966Z"}
 {"level":"info","message":"Identity service is running on port http://localhost:3002","service":"api-gateway","timestamp":"2025-03-01T18:41:24.967Z"}
 {"level":"info","message":"Redis Url redis://localhost:6379","service":"api-gateway","timestamp":"2025-03-01T18:41:24.967Z"}
+{"level":"info","message":"API Gateway is running on port 4000","service":"api-gateway","timestamp":"2025-03-03T17:03:21.805Z"}
+{"level":"info","message":"Identity service is running on port http://localhost:3001","service":"api-gateway","timestamp":"2025-03-03T17:03:21.810Z"}
+{"level":"info","message":"Identity service is running on port http://localhost:3002","service":"api-gateway","timestamp":"2025-03-03T17:03:21.810Z"}
+{"level":"info","message":"Media service is running on port http://localhost:3003","service":"api-gateway","timestamp":"2025-03-03T17:03:21.810Z"}
+{"level":"info","message":"Redis Url redis://localhost:6379","service":"api-gateway","timestamp":"2025-03-03T17:03:21.811Z"}
+{"level":"info","message":"Recieved GET request to /v1/media.upload","service":"api-gateway","timestamp":"2025-03-03T17:08:00.426Z"}
+{"level":"info","message":"Request body, [object Object]","service":"api-gateway","timestamp":"2025-03-03T17:08:00.427Z"}
+{"level":"info","message":"Recieved GET request to /v1/media/upload","service":"api-gateway","timestamp":"2025-03-03T17:08:15.486Z"}
+{"level":"info","message":"Request body, [object Object]","service":"api-gateway","timestamp":"2025-03-03T17:08:15.486Z"}
+{"level":"warn","message":"Access Attempt without valid token","service":"api-gateway","timestamp":"2025-03-03T17:08:15.488Z"}
+{"level":"info","message":"Recieved POST request to /v1/media/upload","service":"api-gateway","timestamp":"2025-03-03T17:09:33.126Z"}
+{"level":"info","message":"Request body, [object Object]","service":"api-gateway","timestamp":"2025-03-03T17:09:33.127Z"}
+{"level":"warn","message":"Access Attempt without valid token","service":"api-gateway","timestamp":"2025-03-03T17:09:33.127Z"}
+{"level":"info","message":"Recieved POST request to /v1/media/upload","service":"api-gateway","timestamp":"2025-03-03T17:09:35.745Z"}
+{"level":"info","message":"Request body, [object Object]","service":"api-gateway","timestamp":"2025-03-03T17:09:35.746Z"}
+{"level":"warn","message":"Access Attempt without valid token","service":"api-gateway","timestamp":"2025-03-03T17:09:35.747Z"}
+{"level":"info","message":"Recieved POST request to /v1/auth/login","service":"api-gateway","timestamp":"2025-03-03T17:12:13.853Z"}
+{"level":"info","message":"Request body, [object Object]","service":"api-gateway","timestamp":"2025-03-03T17:12:13.854Z"}
+{"level":"info","message":"Response received from Identity service: 400","service":"api-gateway","timestamp":"2025-03-03T17:12:14.019Z"}

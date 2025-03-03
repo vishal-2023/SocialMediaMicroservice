@@ -49,3 +49,10 @@
 {"level":"info","message":"Identity Service running on PORT 3001","service":"identity-service","timestamp":"2025-03-01T09:23:19.077Z"}
 {"level":"info","message":"Identity Service running on PORT 3001","service":"identity-service","timestamp":"2025-03-01T09:23:20.799Z"}
 {"level":"info","message":"Connected to mongodb","service":"identity-service","timestamp":"2025-03-01T09:23:21.343Z"}
+{"level":"info","message":"Identity Service running on PORT 3001","service":"identity-service","timestamp":"2025-03-03T16:56:39.848Z"}
+{"level":"info","message":"Identity Service running on PORT 3001","service":"identity-service","timestamp":"2025-03-03T16:56:41.003Z"}
+{"level":"info","message":"Connected to mongodb","service":"identity-service","timestamp":"2025-03-03T16:56:41.470Z"}
+{"level":"info","message":"Recieved POST request to /api/auth/login","service":"identity-service","timestamp":"2025-03-03T17:12:13.886Z"}
+{"level":"info","message":"Request body, [object Object]","service":"identity-service","timestamp":"2025-03-03T17:12:13.886Z"}
+{"level":"info","message":"Login endpoint hit...","service":"identity-service","timestamp":"2025-03-03T17:12:13.891Z"}
+{"level":"warn","message":"Invalid password","service":"identity-service","timestamp":"2025-03-03T17:12:14.014Z"}
