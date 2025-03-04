@@ -8,6 +8,7 @@ const Redis = require('ioredis')
 // const { rateLimit } = require('express-rate-limit');
 const routes = require('./routes/Post-routes');
 const errorHandler = require('./middlewares/errorHandlers');
+const { connectToRabbitMQ } = require('./utils/rabbitmq');
 require('dotenv').config();
 
 const app = express();
@@ -53,9 +54,19 @@ app.use('/api/posts',(req,res,next) => {
 
 app.use(errorHandler)
 
-app.listen(PORT,() => {
-    logger.info(`Post Service running on port ${PORT}`)
-})
+async function startServer(){
+    try{
+        await connectToRabbitMQ();
+        app.listen(PORT,() => {
+            logger.info(`Post Service running on port ${PORT}`)
+        })
+    }catch(err){
+        logger.error("Failed to connect to server",err);
+        process.exit(1);
+    }
+}
+
+startServer()
 
 // unhandled promise
 process.on('unhandledRejection',((reason,promise) => {
