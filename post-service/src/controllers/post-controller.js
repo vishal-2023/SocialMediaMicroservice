@@ -1,5 +1,6 @@
 const Post = require('../models/Post');
 const logger = require('../utils/logger');
+const { publishEvent } = require('../utils/rabbitmq');
 const { validatePost } = require('../utils/Validation');
 
 
@@ -34,6 +35,11 @@ const createPost = async (req, res) => {
             mediaIds: mediaIds || []
         })
         await createNewPost.save();
+        await publishEvent('post.created',{
+            postId:createNewPost?._id.toString(),
+            userId:createNewPost.user.toString(),
+            content:createNewPost.content
+        })
         logger.info("Post created successfully", createNewPost);
         await inValidatePostCache(req);
 
@@ -124,14 +130,24 @@ const getPost = async (req, res) => {
 const deletePost = async (req, res) => {
     try {
         const id = req.params.id;
-        const deletePost = await Post.findOneAndDelete({ _id: id });
+        const deletePost = await Post.findByIdAndDelete({ _id:id });
+        console.log("00000000000",deletePost);
+
         if (!deletePost) {
-            return res.status(200).json({
+            return res.status(404).json({
                 status: false,
-                message: "Post deleted successfully.."
+                message: "Post Not Found.."
             })
         }
         await inValidatePostCache(req,id);
+
+        // publish post delete method..
+        await publishEvent('post.deleted', {
+            postId: deletePost._id.toString(), // Use deletePost here
+            userId: req.user.userId,
+            mediaIds: deletePost.mediaIds // Use deletePost here as well
+        });
+
         res.json({
             message: "Post deleted successfully",
         });

@@ -8,6 +8,8 @@ const Redis = require('ioredis')
 // const { rateLimit } = require('express-rate-limit');
 const routes = require('./routes/media-routes');
 const errorHandler = require('./middlewares/errorHandlers');
+const { connectToRabbitMQ, consumeEvent } = require('./utils/rabbitmq');
+const { handlePostDeleted } = require('./eventHandler/media-event-handler');
 require('dotenv').config();
 
 const app = express();
@@ -53,9 +55,26 @@ app.use('/api/media',(req,res,next) => {
 
 app.use(errorHandler)
 
-app.listen(PORT,() => {
-    logger.info(`Media Service running on port ${PORT}`)
-})
+async function startServer(){
+    try{
+        await connectToRabbitMQ();
+
+        //consume all events...
+        await consumeEvent('post.deleted',handlePostDeleted)
+        
+
+        app.listen(PORT,() => {
+            logger.info(`Media Service running on port ${PORT}`)
+        })
+        
+    }catch(err){
+        logger.error("failed to connect server");
+        process.exit(1);
+    }
+}
+
+startServer();
+
 
 // unhandled promise
 process.on('unhandledRejection',((reason,promise) => {
